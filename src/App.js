@@ -6,9 +6,6 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Home } from "./pages/home";
 import { Private } from "./pages/private";
 import './App.css';
-import SignIn from './components/auth/sign_in';
-import SignUp from './components/auth/sign_up';
-import AuthDetails from './components/auth/auth_details';
 import { useEffect, useState } from "react";
 
 function App() {
@@ -43,6 +40,7 @@ if(isFetching){
       <Routes>
         <Route index path="/" element={<Home user={user}></Home>}></Route>
         <Route path="/private" element={<ProtectedRoute user={user}><Private></Private></ProtectedRoute>}></Route>
+        
       </Routes>
     </BrowserRouter>
   );
