@@ -44,7 +44,7 @@ const AddPlatformForm = ({ onAddPlatform }) => {
       <Button
         variant="contained"
         onClick={handleAddPlatform}
-        sx={{ mt: 2 }}
+        sx={{ mt: 2, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}
       >
         Add Platform
       </Button>
