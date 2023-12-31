@@ -17,7 +17,8 @@ export const Private = () => {
     const [newDisplayName, setNewDisplayName] = useState('');
     const [isUsernameTaken, setIsUsernameTaken] = useState(false);
     const [tileColor, setTileColor] = useState('#000000');
-    const [backgroundColor, setBackgroundColor] = useState('#f0f0f0');
+    const [titleColor, setTitleColor] = useState('#000000');
+    const [backgroundColor, setBackgroundColor] = useState('#FBFBFB');
     const [textColor, setTextColor] = useState('#ffffff');
     const [newDescription, setNewDescription] = useState('');
     const navigate = useNavigate()
@@ -35,13 +36,13 @@ export const Private = () => {
 
     const handleColorPreferences = async () => {
         // Ensure that tileColor, backgroundColor, and textColor are valid color codes
-        if (!isValidColorCode(tileColor) || !isValidColorCode(backgroundColor) || !isValidColorCode(textColor)) {
+        if (!isValidColorCode(tileColor) || !isValidColorCode(backgroundColor) || !isValidColorCode(textColor) || !isValidColorCode(titleColor)) {
             console.error('Invalid color code format');
             return;
         }
 
         // Call the function to update color preferences in Firestore
-        await updateColorPreferences(tileColor, backgroundColor, textColor);
+        await updateColorPreferences(tileColor, backgroundColor, textColor, titleColor);
     };
 
     const isValidColorCode = (colorCode) => {
@@ -50,7 +51,7 @@ export const Private = () => {
         return hexColorRegex.test(colorCode);
     };
 
-    const updateColorPreferences = async (tileColor, backgroundColor, textColor) => {
+    const updateColorPreferences = async (tileColor, backgroundColor, textColor, titleColor) => {
         if (auth.currentUser) {
             const userCollectionName = getCollectionName(auth.currentUser);
             const userDocRef = doc(firestore, 'users', userCollectionName);
@@ -60,6 +61,7 @@ export const Private = () => {
                     tileColor,
                     backgroundColor,
                     textColor,
+                    titleColor,
                 },
             });
 
@@ -78,42 +80,43 @@ export const Private = () => {
             const newCollectionName = getCollectionName({ ...auth.currentUser, displayName: newDisplayName });
 
 
-              // Sprawdź, czy nowa nazwa użytkownika jest już zajęta
-              const newDocRef = doc(firestore, 'users', newCollectionName);
-              const newDocSnapshot = await getDoc(newDocRef);
-              if (newDocSnapshot.exists()) {
+            // Sprawdź, czy nowa nazwa użytkownika jest już zajęta
+            const newDocRef = doc(firestore, 'users', newCollectionName);
+            const newDocSnapshot = await getDoc(newDocRef);
+            if (newDocSnapshot.exists()) {
                 // Nowa nazwa użytkownika jest zajęta
                 setIsUsernameTaken(true);
             } else {
                 // Nowa nazwa użytkownika jest dostępna
                 setIsUsernameTaken(false);
-            
 
-            // Aktualizuj wartość displayName w autoryzacji
-            await updateProfile(auth.currentUser, {
-                displayName: newDisplayName,
-            });
 
-            // Sprawdź, czy displayName się zmieniło
-            if (oldCollectionName !== newCollectionName) {
-                // Zapisz dane do nowej kolekcji
-                const newDocRef = doc(firestore, 'users', newCollectionName);
-                await setDoc(newDocRef, { ...userData });
-
-                // Usuń starą kolekcję
-                const oldDocRef = doc(firestore, 'users', oldCollectionName);
-                await deleteDoc(oldDocRef);
-
-                // Ustaw lokalne dane użytkownika na null, aby wymusić ponowne pobranie
-                setUserData(null);
-            } else {
-                // Jeśli tylko displayName się zmieniło, zaktualizuj go w istniejącym dokumencie
-                const userDocRef = doc(firestore, 'users', oldCollectionName);
-                await updateDoc(userDocRef, {
+                // Aktualizuj wartość displayName w autoryzacji
+                await updateProfile(auth.currentUser, {
                     displayName: newDisplayName,
                 });
+
+                // Sprawdź, czy displayName się zmieniło
+                if (oldCollectionName !== newCollectionName) {
+                    // Zapisz dane do nowej kolekcji
+                    const newDocRef = doc(firestore, 'users', newCollectionName);
+                    await setDoc(newDocRef, { ...userData });
+
+                    // Usuń starą kolekcję
+                    const oldDocRef = doc(firestore, 'users', oldCollectionName);
+                    await deleteDoc(oldDocRef);
+
+                    // Ustaw lokalne dane użytkownika na null, aby wymusić ponowne pobranie
+                    setUserData(null);
+                } else {
+                    // Jeśli tylko displayName się zmieniło, zaktualizuj go w istniejącym dokumencie
+                    const userDocRef = doc(firestore, 'users', oldCollectionName);
+                    await updateDoc(userDocRef, {
+                        displayName: newDisplayName,
+                    });
+                }
             }
-        }}
+        }
     };
 
     const handleUpdateDescription = async () => {
@@ -201,7 +204,9 @@ export const Private = () => {
         };
 
         fetchUserData();
-    }, [auth.currentUser, getCollectionName]);
+        console.log('printdb')
+
+    }, [auth.currentUser.displayName]);
 
 
     return (
@@ -249,7 +254,7 @@ export const Private = () => {
                     </Typography>
                 )}
 
-                             <Typography component="h2" variant="h5">
+                <Typography component="h2" variant="h5">
                     Update Description
                 </Typography>
 
@@ -274,6 +279,20 @@ export const Private = () => {
 
 
                 <Box sx={{ mt: 3, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <div style={{ marginBottom: '1rem' }}>
+
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <TextField
+                                label="Title Color"
+                                variant="outlined"
+                                type="color"
+                                value={titleColor}
+                                onChange={(e) => setTitleColor(e.target.value)}
+                                style={{ width: '100px', marginRight: '1rem' }}
+                            />
+
+                        </div>
+                    </div>
                     <div style={{ marginBottom: '1rem' }}>
 
                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -380,11 +399,11 @@ export const Private = () => {
                 <Button variant="contained" onClick={handleSignOut} sx={{ mt: 2, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}>
                     Sign Out
                 </Button>
-                
+
             </Paper>
-           
+
         </Container>
-        
+
 
     );
 }

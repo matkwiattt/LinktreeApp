@@ -24,6 +24,7 @@ const PublicProfile = () => {
     };
 
     fetchUserData();
+    console.log('printdb')
   }, [username]);
 
   if (userNotFound) {
@@ -49,12 +50,12 @@ const PublicProfile = () => {
         alignItems: 'center',
       }}
     >
-      <Typography variant="h3" gutterBottom style={{ textTransform: 'uppercase' }}>
+      <Typography variant="h3" gutterBottom style={{ textTransform: 'uppercase', color: userData?.colorPreferences?.titleColor || '#f0f0f0' }}>
         {username}'s Links
       </Typography>
 
       {userData && userData.description && (
-                <Typography variant="body1" style={{ marginBottom: '2rem' }}>
+                <Typography variant="body1" style={{ marginBottom: '2rem', color: userData?.colorPreferences?.titleColor || '#f0f0f0'  }}>
                     {userData.description}
                 </Typography>
             )}
@@ -96,7 +97,7 @@ const PublicProfile = () => {
             </Grid>
           ))}
            <div style={{ textAlign: 'center', padding: '2rem' }}>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom style={{color: userData?.colorPreferences?.titleColor || '#f0f0f0' }} >
                     Want to setup your own page? <Link to="/">Register now</Link>
                 </Typography>
             </div>
