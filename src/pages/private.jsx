@@ -23,7 +23,6 @@ export const Private = () => {
     const [newDescription, setNewDescription] = useState('');
     const navigate = useNavigate()
 
-
     const handleSignOut = () => {
         signOut(auth)
             .then(() => console.log('Sign Out'))
@@ -206,8 +205,32 @@ export const Private = () => {
         fetchUserData();
         console.log('printdb')
 
-    }, [auth.currentUser.displayName]);
+    }/* , [auth.currentUser.displayName] */);
+    
+    const loadUserData = async () => {
+        const userCollectionName = getCollectionName(auth.currentUser);
+        const userDocRef = doc(firestore, 'users', userCollectionName);
+        
+        const userData = await getDoc(userDocRef);
+        if (userData.exists()) {
+            setNewDisplayName(auth.currentUser?.displayName);
+            setNewDescription(userData.data().description);
+            setTitleColor(userData.data().colorPreferences.titleColor);
+            setTileColor(userData.data().colorPreferences.tileColor);
+            setBackgroundColor(userData.data().colorPreferences.backgroundColor);
+            setTextColor(userData.data().colorPreferences.textColor);
+        }
+    };
+    useEffect(() => {
+        loadUserData();
+    }, []);
 
+    const handleDisplayNameChange = (e) => {
+        const inputValue = e.target.value;
+        const sanitizedValue = inputValue.replace(/[^a-z0-9]/g, ''); // Remove characters that are not letters or numbers
+
+        setNewDisplayName(sanitizedValue);
+    };
 
     return (
         <Container component="main" maxWidth="md">
@@ -237,7 +260,8 @@ export const Private = () => {
                     margin="normal"
                     fullWidth
                     value={newDisplayName}
-                    onChange={(e) => setNewDisplayName(e.target.value)}
+                    onChange={handleDisplayNameChange}
+                    helperText="Only numbers and lowercase letters are allowed"
                 />
 
                 <Button
