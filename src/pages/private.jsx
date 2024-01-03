@@ -227,7 +227,7 @@ export const Private = () => {
 
     const handleDisplayNameChange = (e) => {
         const inputValue = e.target.value;
-        const sanitizedValue = inputValue.replace(/[^a-zA-Z0-9]/g, ''); // Remove characters that are not letters or numbers
+        const sanitizedValue = inputValue.replace(/[^a-z0-9]/g, ''); // Remove characters that are not letters or numbers
 
         setNewDisplayName(sanitizedValue);
     };
@@ -261,7 +261,7 @@ export const Private = () => {
                     fullWidth
                     value={newDisplayName}
                     onChange={handleDisplayNameChange}
-                    helperText="Only letters and numbers are allowed"
+                    helperText="Only numbers and lowercase letters are allowed"
                 />
 
                 <Button
