@@ -77,11 +77,11 @@ export const Private = () => {
         if (auth.currentUser && newDisplayName.trim() !== '') {
             // Pobierz starą i nową nazwę kolekcji
             const oldCollectionName = getCollectionName(auth.currentUser);
-            const newCollectionName = getCollectionName({ ...auth.currentUser, displayName: newDisplayName });
+            const newCollectionName = getCollectionName({ ...auth.currentUser, displayName: newDisplayName.toLowerCase() });
 
 
             // Sprawdź, czy nowa nazwa użytkownika jest już zajęta
-            const newDocRef = doc(firestore, 'users', newCollectionName);
+            const newDocRef = doc(firestore, 'users', newCollectionName.toLowerCase());
             const newDocSnapshot = await getDoc(newDocRef);
             if (newDocSnapshot.exists()) {
                 // Nowa nazwa użytkownika jest zajęta
@@ -93,26 +93,26 @@ export const Private = () => {
 
                 // Aktualizuj wartość displayName w autoryzacji
                 await updateProfile(auth.currentUser, {
-                    displayName: newDisplayName,
+                    displayName: newDisplayName.toLowerCase(),
                 });
 
                 // Sprawdź, czy displayName się zmieniło
                 if (oldCollectionName !== newCollectionName) {
                     // Zapisz dane do nowej kolekcji
-                    const newDocRef = doc(firestore, 'users', newCollectionName);
+                    const newDocRef = doc(firestore, 'users', newCollectionName.toLowerCase());
                     await setDoc(newDocRef, { ...userData });
 
                     // Usuń starą kolekcję
-                    const oldDocRef = doc(firestore, 'users', oldCollectionName);
+                    const oldDocRef = doc(firestore, 'users', oldCollectionName.toLowerCase());
                     await deleteDoc(oldDocRef);
 
                     // Ustaw lokalne dane użytkownika na null, aby wymusić ponowne pobranie
                     setUserData(null);
                 } else {
                     // Jeśli tylko displayName się zmieniło, zaktualizuj go w istniejącym dokumencie
-                    const userDocRef = doc(firestore, 'users', oldCollectionName);
+                    const userDocRef = doc(firestore, 'users', oldCollectionName.toLowerCase());
                     await updateDoc(userDocRef, {
-                        displayName: newDisplayName,
+                        displayName: newDisplayName.toLowerCase(),
                     });
                 }
             }
