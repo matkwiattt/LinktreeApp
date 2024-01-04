@@ -3,7 +3,7 @@ import { signOut, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { app, auth, firestore } from "../firebase";
 import { initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { Button, Container, CssBaseline, Typography, Box, TextField, Grid, Paper } from "@mui/material";
 import { getDocs, collection, Firestore, getDoc, setDoc, doc, updateDoc, arrayUnion, arrayRemove, deleteDoc } from "firebase/firestore";
 import AddPlatformForm from "../components/AddPlatformForm";
@@ -37,13 +37,10 @@ export const Private = () => {
     };
 
     const handleColorPreferences = async () => {
-        // Ensure that tileColor, backgroundColor, and textColor are valid color codes
         if (!isValidColorCode(tileColor) || !isValidColorCode(backgroundColor) || !isValidColorCode(textColor) || !isValidColorCode(titleColor)) {
             console.error('Invalid color code format');
             return;
         }
-
-        // Call the function to update color preferences in Firestore
         await updateColorPreferences(tileColor, backgroundColor, textColor, titleColor);
     };
 
@@ -110,6 +107,21 @@ export const Private = () => {
             );
         } catch (error) {
             console.error('Błąd podczas przesyłania pliku:', error);
+        }
+    };
+
+    const handleRemoveAvatar = async () => {
+        try {
+            const storageRef = ref(getStorage(app));
+      
+            const timestamp = new Date().toISOString();
+            const avatarRef = ref(storageRef, `avatars/${username}`);
+
+            await deleteObject(avatarRef);
+            setAvatarUrl(null);
+            console.log('Plik usunięty pomyślnie.');
+        } catch (error) {
+            console.error('Błąd podczas usuwania pliku:', error);
         }
     };
 
@@ -254,9 +266,10 @@ export const Private = () => {
             const storageRef = ref(getStorage(app));
             const avatarRef = ref(storageRef, `avatars/${username}`);
             const avatarUrl = await getDownloadURL(avatarRef);
+            
             setAvatarUrl(avatarUrl);
         } catch (error) {
-            console.error('Błąd podczas pobierania URL:', error);
+            setAvatarUrl(null);
         }
     };
     useEffect(() => {
@@ -293,6 +306,8 @@ export const Private = () => {
                     Hello {auth.currentUser?.displayName || auth.currentUser.email}
                 </Typography>
                 <div>
+                {avatarUrl !== null &&
+                    (
                     <img src={avatarUrl} style={{
                         minWidth: 140,
                         minHeight: 140,
@@ -300,18 +315,43 @@ export const Private = () => {
                         maxHeight: 280,
                         borderRadius: 20,
                         overflow: 'hidden'
-                    }} alt="Opis obrazu" />
+                    }} alt="Opis obrazu" />)}
+                {avatarUrl === null &&
+                    (<div style={{
+                        width: 200,
+                        height: 140,
+                        borderRadius: 20,
+                        borderStyle: 'solid',
+                        borderWidth: 1,
+                        borderColor: '#000',
+                        textAlign: 'center',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginBottom: 5,
+                        padding: 'auto',
+                        display: 'flex'
+                    }}><span>Set your avatar...</span></div>)}
                 </div>
 
-                <input type="file" accept="image/*" onChange={handleAvatarChange} />
+                {avatarUrl === null && (<input type="file" accept="image/*" onChange={handleAvatarChange} />) }
+                <div>
+                {avatarUrl === null && ( <Button
+                        variant="contained"
+                        onClick={handleUpdateAvatar}
+                        sx={{ mx: 2, mt: 1, mb: 2, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}
+                    >
+                        Upload Avatar
+                    </Button> )}
 
-                <Button
-                    variant="contained"
-                    onClick={handleUpdateAvatar}
-                    sx={{ mt: 1, mb: 3, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}
-                >
-                    Update Avatar
-                </Button>
+                    {avatarUrl !== null &&
+                    (<Button
+                        variant="contained"
+                        onClick={handleRemoveAvatar}
+                        sx={{ mx: 2, mt: 1, mb: 2, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}
+                    >
+                        Remove Avatar
+                    </Button>)}
+                </div>
 
                 <Typography component="h2" variant="h5">
                     Update Display Name
