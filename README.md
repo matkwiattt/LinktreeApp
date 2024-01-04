@@ -1,4 +1,4 @@
-Organize all your important links in one place! Set up your nickname, choose your preferred colors, and customize your avatar. Now, easily share your Linktree profile by adding /profile/yourusername to your social media BIO
+Organize all your important links in one place! Set up your nickname, choose your preferred colors, and customize your avatar. Now, easily share "all your links" profile by adding /profile/yourusername to your social media BIO
 
 
 <img width="700" alt="Screenshot 2024-01-04 at 23 25 38" src="https://github.com/matkwiattt/LinktreeApp/assets/90191027/956c9315-18d5-4ca1-bfa0-a416adb389ca">
