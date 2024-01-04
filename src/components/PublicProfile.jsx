@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getDoc, doc } from 'firebase/firestore';
-import { firestore } from '../firebase';
+import { app, firestore } from '../firebase';
 import { Typography, Grid, Paper } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 const PublicProfile = () => {
   const { username } = useParams();
   const [userData, setUserData] = useState(null);
   const [userNotFound, setUserNotFound] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -20,6 +22,15 @@ const PublicProfile = () => {
       } else {
         console.log('User not found');
         setUserNotFound(true);
+      }
+
+      try {
+        const storageRef = ref(getStorage(app));
+        const avatarRef = ref(storageRef, `avatars/${username}`);
+        const avatarUrl = await getDownloadURL(avatarRef);
+        setAvatarUrl(avatarUrl);
+      } catch (error) {
+          console.error('Błąd podczas pobierania URL:', error);
       }
     };
 
@@ -50,6 +61,18 @@ const PublicProfile = () => {
         alignItems: 'center',
       }}
     >
+      <div>
+          <img src={avatarUrl} style={{
+              minWidth: 200,
+              minHeight: 200,
+              maxWidth: 400,
+              maxHeight: 400,
+              borderRadius: 20,
+              marginBottom: 40,
+              overflow: 'hidden'
+          }} alt="Opis obrazu" />
+      </div>
+
       <Typography variant="h3" gutterBottom style={{ textTransform: 'uppercase', color: userData?.colorPreferences?.titleColor || '#f0f0f0' }}>
         {username}'s Links
       </Typography>

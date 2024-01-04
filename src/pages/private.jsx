@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { signOut, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth, firestore } from "../firebase";
+import { app, auth, firestore } from "../firebase";
+import { initializeApp } from "firebase/app";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { Button, Container, CssBaseline, Typography, Box, TextField, Grid, Paper } from "@mui/material";
 import { getDocs, collection, Firestore, getDoc, setDoc, doc, updateDoc, arrayUnion, arrayRemove, deleteDoc } from "firebase/firestore";
 import AddPlatformForm from "../components/AddPlatformForm";
 import { Link } from 'react-router-dom';
 
 const user = auth.currentUser;
-
 
 export const Private = () => {
     let username = auth.currentUser?.displayName || auth.currentUser.email;
@@ -21,6 +22,8 @@ export const Private = () => {
     const [backgroundColor, setBackgroundColor] = useState('#FBFBFB');
     const [textColor, setTextColor] = useState('#ffffff');
     const [newDescription, setNewDescription] = useState('');
+    const [avatar, setAvatar] = useState(null);
+    const [avatarUrl, setAvatarUrl] = useState(null);
     const navigate = useNavigate()
 
     const handleSignOut = () => {
@@ -72,43 +75,69 @@ export const Private = () => {
         }
     };
 
+    const handleUpdateAvatar = async () => {
+        try {
+            if (!avatar) {
+              console.error('Nie wybrano pliku.');
+              return;
+            }
+      
+            const storageRef = ref(getStorage(app));
+      
+            const timestamp = new Date().toISOString();
+            const avatarRef = ref(storageRef, `avatars/${username}`);
+
+      
+            const uploadTask = uploadBytesResumable(avatarRef, avatar);
+      
+            uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log(`Postęp przesyłania: ${progress}%`);
+            },
+            (error) => {
+                console.error('Błąd przesyłania pliku:', error);
+            },
+            async () => {
+                try {
+                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                console.log('Plik przesłano pomyślnie. URL:', downloadURL);
+                    setAvatarUrl(downloadURL);
+                } catch (error) {
+                    console.error('Błąd podczas pobierania URL:', error);
+                }
+            }
+            );
+        } catch (error) {
+            console.error('Błąd podczas przesyłania pliku:', error);
+        }
+    };
+
     const handleUpdateDisplayName = async () => {
         if (auth.currentUser && newDisplayName.trim() !== '') {
-            // Pobierz starą i nową nazwę kolekcji
             const oldCollectionName = getCollectionName(auth.currentUser);
             const newCollectionName = getCollectionName({ ...auth.currentUser, displayName: newDisplayName.toLowerCase() });
 
-
-            // Sprawdź, czy nowa nazwa użytkownika jest już zajęta
             const newDocRef = doc(firestore, 'users', newCollectionName.toLowerCase());
             const newDocSnapshot = await getDoc(newDocRef);
             if (newDocSnapshot.exists()) {
-                // Nowa nazwa użytkownika jest zajęta
                 setIsUsernameTaken(true);
             } else {
-                // Nowa nazwa użytkownika jest dostępna
                 setIsUsernameTaken(false);
 
-
-                // Aktualizuj wartość displayName w autoryzacji
                 await updateProfile(auth.currentUser, {
                     displayName: newDisplayName.toLowerCase(),
                 });
 
-                // Sprawdź, czy displayName się zmieniło
                 if (oldCollectionName !== newCollectionName) {
-                    // Zapisz dane do nowej kolekcji
                     const newDocRef = doc(firestore, 'users', newCollectionName.toLowerCase());
                     await setDoc(newDocRef, { ...userData });
 
-                    // Usuń starą kolekcję
                     const oldDocRef = doc(firestore, 'users', oldCollectionName.toLowerCase());
                     await deleteDoc(oldDocRef);
 
-                    // Ustaw lokalne dane użytkownika na null, aby wymusić ponowne pobranie
                     setUserData(null);
                 } else {
-                    // Jeśli tylko displayName się zmieniło, zaktualizuj go w istniejącym dokumencie
                     const userDocRef = doc(firestore, 'users', oldCollectionName.toLowerCase());
                     await updateDoc(userDocRef, {
                         displayName: newDisplayName.toLowerCase(),
@@ -205,7 +234,7 @@ export const Private = () => {
         fetchUserData();
         console.log('printdb')
 
-    }/* , [auth.currentUser.displayName] */);
+    }, [auth.currentUser.displayName]);
     
     const loadUserData = async () => {
         const userCollectionName = getCollectionName(auth.currentUser);
@@ -220,10 +249,24 @@ export const Private = () => {
             setBackgroundColor(userData.data().colorPreferences.backgroundColor);
             setTextColor(userData.data().colorPreferences.textColor);
         }
+
+        try {
+            const storageRef = ref(getStorage(app));
+            const avatarRef = ref(storageRef, `avatars/${username}`);
+            const avatarUrl = await getDownloadURL(avatarRef);
+            setAvatarUrl(avatarUrl);
+        } catch (error) {
+            console.error('Błąd podczas pobierania URL:', error);
+        }
     };
     useEffect(() => {
         loadUserData();
     }, []);
+
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        setAvatar(file);
+    };
 
     const handleDisplayNameChange = (e) => {
         const inputValue = e.target.value;
@@ -231,6 +274,18 @@ export const Private = () => {
 
         setNewDisplayName(sanitizedValue);
     };
+
+    // useEffect(() => {
+    //     const fetchImage = async () => {
+    //     try {
+    //         setImageSrc('https://previews.123rf.com/images/gmast3r/gmast3r1706/gmast3r170600032/79514957-profilowa-ikona-męska-emoci-avatar-mężczyzna-kreskówki-portreta-twarzy-zdziwiona-płaska-wektorowa.jpg');  // Jeśli obraz jest w formacie base64
+    //     } catch (error) {
+    //         console.error('Błąd pobierania obrazu:', error);
+    //     }
+    //     };
+
+    //     fetchImage();
+    // }, []);
 
     return (
         <Container component="main" maxWidth="md">
@@ -249,6 +304,26 @@ export const Private = () => {
                 <Typography component="h2" variant="h4" sx={{ mb: 3, color: '#000000' }}>
                     Hello {auth.currentUser?.displayName || auth.currentUser.email}
                 </Typography>
+                <div>
+                    <img src={avatarUrl} style={{
+                        minWidth: 140,
+                        minHeight: 140,
+                        maxWidth: 280,
+                        maxHeight: 280,
+                        borderRadius: 20,
+                        overflow: 'hidden'
+                    }} alt="Opis obrazu" />
+                </div>
+
+                <input type="file" accept="image/*" onChange={handleAvatarChange} />
+
+                <Button
+                    variant="contained"
+                    onClick={handleUpdateAvatar}
+                    sx={{ mt: 1, mb: 3, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}
+                >
+                    Update Avatar
+                </Button>
 
                 <Typography component="h2" variant="h5">
                     Update Display Name
