@@ -24,6 +24,7 @@ export const Private = () => {
     const [newDescription, setNewDescription] = useState('');
     const [avatar, setAvatar] = useState(null);
     const [avatarUrl, setAvatarUrl] = useState(null);
+    const [isSetupNecessary, setIsSetupNecessary] = useState(false);
     const navigate = useNavigate()
 
     const handleSignOut = () => {
@@ -142,6 +143,8 @@ export const Private = () => {
                 });
 
                 if (oldCollectionName !== newCollectionName) {
+                    handleRemoveAvatar();
+                    
                     const newDocRef = doc(firestore, 'users', newCollectionName.toLowerCase());
                     await setDoc(newDocRef, { ...userData });
 
@@ -213,7 +216,14 @@ export const Private = () => {
 
     const handleViewProfile = () => {
         if (auth.currentUser) {
-            navigate(`/profile/${auth.currentUser.displayName}`);
+            if(auth.currentUser.displayName != null)
+            {
+                navigate(`/profile/${auth.currentUser.displayName}`);
+            }
+            else
+            {
+                setIsSetupNecessary(true);
+            }
         }
     };
 
@@ -253,13 +263,24 @@ export const Private = () => {
         const userDocRef = doc(firestore, 'users', userCollectionName);
         
         const userData = await getDoc(userDocRef);
-        if (userData.exists()) {
+        if (auth.currentUser?.displayName != null) {
             setNewDisplayName(auth.currentUser?.displayName);
-            setNewDescription(userData.data().description);
-            setTitleColor(userData.data().colorPreferences.titleColor);
-            setTileColor(userData.data().colorPreferences.tileColor);
-            setBackgroundColor(userData.data().colorPreferences.backgroundColor);
-            setTextColor(userData.data().colorPreferences.textColor);
+        }
+        if(userData.exists())
+        {
+            if (userData.data().description != null) {
+                setNewDescription(userData.data().description);
+            }
+            if (userData.data().colorPreferences != undefined) {
+                setTitleColor(userData.data().colorPreferences.titleColor);
+                setTileColor(userData.data().colorPreferences.tileColor);
+                setBackgroundColor(userData.data().colorPreferences.backgroundColor);
+                setTextColor(userData.data().colorPreferences.textColor);
+            }
+            else 
+            {
+                handleColorPreferences();
+            }
         }
 
         try {
@@ -309,18 +330,16 @@ export const Private = () => {
                 {avatarUrl !== null &&
                     (
                     <img src={avatarUrl} style={{
-                        minWidth: 140,
-                        minHeight: 140,
-                        maxWidth: 280,
-                        maxHeight: 280,
-                        borderRadius: 20,
+                        width: 200,
+                        height: 200,
+                        borderRadius: '100%',
                         overflow: 'hidden'
                     }} alt="Opis obrazu" />)}
                 {avatarUrl === null &&
                     (<div style={{
                         width: 200,
-                        height: 140,
-                        borderRadius: 20,
+                        height: 200,
+                        borderRadius: '100%',
                         borderStyle: 'solid',
                         borderWidth: 1,
                         borderColor: '#000',
@@ -338,7 +357,7 @@ export const Private = () => {
                 {avatarUrl === null && ( <Button
                         variant="contained"
                         onClick={handleUpdateAvatar}
-                        sx={{ mx: 2, mt: 1, mb: 2, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}
+                        sx={{ mx: 2, mt: 4, mb: 4, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}
                     >
                         Upload Avatar
                     </Button> )}
@@ -347,7 +366,7 @@ export const Private = () => {
                     (<Button
                         variant="contained"
                         onClick={handleRemoveAvatar}
-                        sx={{ mx: 2, mt: 1, mb: 2, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}
+                        sx={{ mx: 2, mt: 4, mb: 4, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}
                     >
                         Remove Avatar
                     </Button>)}
@@ -522,6 +541,8 @@ export const Private = () => {
                 <Button variant="contained" onClick={handleViewProfile} sx={{ mt: 2, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}>
                     View Profile
                 </Button>
+
+                { auth.currentUser.displayName == null && isSetupNecessary && (<span style={{color: 'red', marginTop: 4}}>Setup your username first!</span>) }
 
                 <Button variant="contained" onClick={handleSignOut} sx={{ mt: 2, backgroundColor: '#000000', color: '#ffffff', borderRadius: '10px' }}>
                     Sign Out

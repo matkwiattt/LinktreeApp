@@ -61,17 +61,16 @@ const PublicProfile = () => {
         alignItems: 'center',
       }}
     >
-      <div>
+
+      {avatarUrl !== null && (<div>
           <img src={avatarUrl} style={{
-              minWidth: 200,
-              minHeight: 200,
-              maxWidth: 400,
-              maxHeight: 400,
-              borderRadius: 20,
+              width: 200,
+              height: 200,
+              borderRadius: 100,
               marginBottom: 40,
               overflow: 'hidden'
-          }} alt="Opis obrazu" />
-      </div>
+          }} alt="Avatar" />
+      </div>) }
 
       <Typography variant="h3" gutterBottom style={{ textTransform: 'uppercase', color: userData?.colorPreferences?.titleColor || '#f0f0f0' }}>
         {username}'s Links
