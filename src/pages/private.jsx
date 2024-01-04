@@ -275,18 +275,6 @@ export const Private = () => {
         setNewDisplayName(sanitizedValue);
     };
 
-    // useEffect(() => {
-    //     const fetchImage = async () => {
-    //     try {
-    //         setImageSrc('https://previews.123rf.com/images/gmast3r/gmast3r1706/gmast3r170600032/79514957-profilowa-ikona-męska-emoci-avatar-mężczyzna-kreskówki-portreta-twarzy-zdziwiona-płaska-wektorowa.jpg');  // Jeśli obraz jest w formacie base64
-    //     } catch (error) {
-    //         console.error('Błąd pobierania obrazu:', error);
-    //     }
-    //     };
-
-    //     fetchImage();
-    // }, []);
-
     return (
         <Container component="main" maxWidth="md">
 
@@ -297,8 +285,8 @@ export const Private = () => {
                     alignItems: 'center',
                     padding: '2rem',
                     marginTop: '2rem',
-                    backgroundColor: '#f0f0f0', // Background color for the entire paper
-                    borderRadius: '15px', // Border radius for the paper
+                    backgroundColor: '#f0f0f0',
+                    borderRadius: '15px',
                 }}
             >
                 <Typography component="h2" variant="h4" sx={{ mb: 3, color: '#000000' }}>
@@ -466,8 +454,8 @@ export const Private = () => {
                                             maxWidth: '300px',
                                             mb: 2,
                                             position: 'relative',
-                                            backgroundColor: '#ffffff', // Background color for the platform paper
-                                            borderRadius: '15px', // Border radius for the platform paper
+                                            backgroundColor: '#ffffff',
+                                            borderRadius: '15px',
                                         }}
                                     >
                                         <Typography variant="h6" gutterBottom style={{ color: '#000000' }}>
