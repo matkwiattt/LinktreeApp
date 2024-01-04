@@ -1,70 +1,9 @@
-# Getting Started with Create React App
+Organize all your important links in one place! Set up your nickname, choose your preferred colors, and customize your avatar. Now, easily share your Linktree profile by adding /profile/yourusername to your social media BIO
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+<img width="748" alt="Screenshot 2024-01-04 at 23 25 38" src="https://github.com/matkwiattt/LinktreeApp/assets/90191027/956c9315-18d5-4ca1-bfa0-a416adb389ca">
 
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+<img width="1064" alt="Screenshot 2024-01-04 at 23 23 11" src="https://github.com/matkwiattt/LinktreeApp/assets/90191027/e05d1517-98dc-4b9e-bb71-02406d9ba3e9">
+<img width="852" alt="Screenshot 2024-01-04 at 23 23 31" src="https://github.com/matkwiattt/LinktreeApp/assets/90191027/9edf45fc-ecb3-4f5c-b03c-70d17575164b">
+<img width="985" alt="Screenshot 2024-01-04 at 23 24 04" src="https://github.com/matkwiattt/LinktreeApp/assets/90191027/13410da4-59bd-483c-8793-5e04f836741b">
+<img width="766" alt="Screenshot 2024-01-04 at 23 24 41" src="https://github.com/matkwiattt/LinktreeApp/assets/90191027/bd1907cc-d419-4fbd-891f-60610228abe4">
