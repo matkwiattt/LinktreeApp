@@ -7,10 +7,19 @@ import { Private } from "./pages/private";
 import './App.css';
 import { useEffect, useState } from "react";
 import PublicProfile from './components/PublicProfile';
+import { Puff } from "react-loader-spinner";
+import { TailSpin } from "react-loader-spinner";
+import { ProgressBar } from "react-loader-spinner";
+import { css } from "@emotion/react";
+import { BarLoader } from "react-spinners";
+
+
 
 function App() {
   const [user, setUser] = useState(null); 
   const [isFetching, setIsFetching] = useState(true);
+
+
   useEffect(()=> {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -26,8 +35,29 @@ function App() {
 
   },[]);
 
-if(isFetching){
-  return <h2>Loading ... </h2>
+  const override = css`
+  display: block;
+  margin: 0 auto;
+  border-color: red;
+`;
+
+if (isFetching) {
+  return (
+    <div className="loader-container">
+      <div className="loader">
+        <p>Loading</p>
+        <BarLoader
+          color="#333" 
+          loading={isFetching}
+          css={override}
+          height={20} 
+          width={200}
+          radius={50} 
+          timeout={5000}
+        />
+      </div>
+    </div>
+  );
 }
 
   return (
